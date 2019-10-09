@@ -92,7 +92,7 @@ func readResponse(resp *http.Response) string {
 	return string(b)
 }
 
-func GetAvailableDevicesAtSpecificEthernetInterface(interfaceName string) []device {
+func GetAvailableDevicesAtSpecificEthernetInterface(interfaceName string) ([]device, error) {
 	/*
 		Call an WS-Discovery Probe Message to Discover NVT type Devices
 	*/
@@ -102,19 +102,16 @@ func GetAvailableDevicesAtSpecificEthernetInterface(interfaceName string) []devi
 	for _, j := range devices {
 		doc := etree.NewDocument()
 		if err := doc.ReadFromString(j); err != nil {
-			fmt.Errorf("%s", err.Error())
-			return nil
+			return nil, err
 		}
-		////fmt.Println(j)
+
 		endpoints := doc.Root().FindElements("./Body/ProbeMatches/ProbeMatch/XAddrs")
 		for _, xaddr := range endpoints {
-			//fmt.Println(xaddr.Tag,strings.Split(strings.Split(xaddr.Text(), " ")[0], "/")[2] )
 			xaddr := strings.Split(strings.Split(xaddr.Text(), " ")[0], "/")[2]
-			fmt.Println(xaddr)
 			c := 0
 			for c = 0; c < len(nvtDevices); c++ {
 				if nvtDevices[c].xaddr == xaddr {
-					fmt.Println(nvtDevices[c].xaddr, "==", xaddr)
+					//fmt.Println(nvtDevices[c].xaddr, "==", xaddr)
 					break
 				}
 			}
@@ -122,20 +119,19 @@ func GetAvailableDevicesAtSpecificEthernetInterface(interfaceName string) []devi
 				continue
 			}
 			dev, err := NewDevice(strings.Split(xaddr, " ")[0])
-			//fmt.Println(dev)
+
 			if err != nil {
 				fmt.Println("Error", xaddr)
 				fmt.Println(err)
 				continue
 			} else {
-				////fmt.Println(dev)
 				nvtDevices = append(nvtDevices, *dev)
 			}
 		}
 		////fmt.Println(j)
 		//nvtDevices[i] = NewDevice()
 	}
-	return nvtDevices
+	return nvtDevices, nil
 }
 
 func (dev *device) getSupportedServices(resp *http.Response) {
