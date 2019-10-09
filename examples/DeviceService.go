@@ -1,18 +1,18 @@
 package main
 
 import (
-	"github.com/yakovlevdmv/goonvif"
-	"net/http"
-	"io/ioutil"
-	"github.com/yakovlevdmv/goonvif/Device"
-	"github.com/yakovlevdmv/goonvif/xsd/onvif"
 	"fmt"
-	"log"
+	"github.com/fiberside/goonvif"
+	"github.com/fiberside/goonvif/Device"
+	"github.com/fiberside/goonvif/xsd/onvif"
 	"github.com/yakovlevdmv/gosoap"
+	"io/ioutil"
+	"log"
+	"net/http"
 )
 
 const (
-	login = "admin"
+	login    = "admin"
 	password = "Supervisor"
 )
 
@@ -32,18 +32,17 @@ func main() {
 	}
 	//Authorization
 	dev.Authenticate(login, password)
-	
+
 	//Preparing commands
 	systemDateAndTyme := Device.GetSystemDateAndTime{}
-	getCapabilities := Device.GetCapabilities{Category:"All"}
-	createUser := Device.CreateUsers{User:
-			onvif.User{
-				Username:  "TestUser",
-				Password:  "TestPassword",
-				UserLevel: "User",
-			},
-		}
-	
+	getCapabilities := Device.GetCapabilities{Category: "All"}
+	createUser := Device.CreateUsers{User: onvif.User{
+		Username:  "TestUser",
+		Password:  "TestPassword",
+		UserLevel: "User",
+	},
+	}
+
 	//Commands execution
 	systemDateAndTymeResponse, err := dev.CallMethod(systemDateAndTyme)
 	if err != nil {
@@ -62,11 +61,9 @@ func main() {
 		log.Println(err)
 	} else {
 		/*
-		You could use https://github.com/yakovlevdmv/gosoap for pretty printing response
-		 */
+			You could use https://github.com/yakovlevdmv/gosoap for pretty printing response
+		*/
 		fmt.Println(gosoap.SoapMessage(readResponse(createUserResponse)).StringIndent())
 	}
-
-
 
 }
