@@ -92,12 +92,12 @@ func readResponse(resp *http.Response) string {
 	return string(b)
 }
 
-func GetAvailableDevicesAtSpecificEthernetInterface(interfaceName string) ([]device, error) {
+func GetAvailableDevicesAtSpecificEthernetInterface(interfaceName string) ([]*device, error) {
 	/*
 		Call an WS-Discovery Probe Message to Discover NVT type Devices
 	*/
 	devices := WS_Discovery.SendProbe(interfaceName, nil, []string{"dn:" + NVT.String()}, map[string]string{"dn": "http://www.onvif.org/ver10/network/wsdl"})
-	nvtDevices := make([]device, 0)
+	nvtDevices := make([]*device, 0)
 	////fmt.Println(devices)
 	for _, j := range devices {
 		doc := etree.NewDocument()
@@ -125,7 +125,7 @@ func GetAvailableDevicesAtSpecificEthernetInterface(interfaceName string) ([]dev
 				fmt.Println(err)
 				continue
 			} else {
-				nvtDevices = append(nvtDevices, *dev)
+				nvtDevices = append(nvtDevices, dev)
 			}
 		}
 		////fmt.Println(j)
@@ -251,7 +251,6 @@ func (dev device) callNonAuthorizedMethod(endpoint string, method interface{}) (
 		//log.Printf("error: %v\n", err.Error())
 		return nil, err
 	}
-
 	/*
 		Build an SOAP request with <method>
 	*/
@@ -265,10 +264,10 @@ func (dev device) callNonAuthorizedMethod(endpoint string, method interface{}) (
 		Adding namespaces
 	*/
 	soap.AddRootNamespaces(Xlmns)
-
 	/*
 		Sending request and returns the response
 	*/
+
 	return networking.SendSoap(endpoint, soap.String())
 }
 

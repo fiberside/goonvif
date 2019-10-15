@@ -1,6 +1,7 @@
 package Device
 
 import (
+	"encoding/xml"
 	"github.com/fiberside/goonvif/xsd"
 	"github.com/fiberside/goonvif/xsd/onvif"
 )
@@ -124,11 +125,22 @@ type GetDeviceInformation struct {
 }
 
 type GetDeviceInformationResponse struct {
-	Manufacturer    string
-	Model           string
-	FirmwareVersion string
-	SerialNumber    string
-	HardwareId      string
+	XMLName xml.Name `xml:"http://www.onvif.org/ver10/device/wsdl GetDeviceInformationResponse"`
+
+	// The manufactor of the device.
+	Manufacturer string `xml:"Manufacturer,omitempty"`
+
+	// The device model.
+	Model string `xml:"Model,omitempty"`
+
+	// The firmware version in the device.
+	FirmwareVersion string `xml:"FirmwareVersion,omitempty"`
+
+	// The serial number of the device.
+	SerialNumber string `xml:"SerialNumber,omitempty"`
+
+	// The hardware ID of the device.
+	HardwareId string `xml:"HardwareId,omitempty"`
 }
 
 type SetSystemDateAndTime struct {
